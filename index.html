@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>以声调心 | Sonic Apothecary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&family=Noto+Serif+SC:wght@200;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyber-blue: #00f3ff;
+            --cyber-purple: #bc13fe;
+            --cyber-gold: #ffd700;
+            --void-black: #050505;
+            --herbal-brown: #3d2b1f;
+        }
+
+        body {
+            background-color: var(--void-black);
+            color: #e0e0e0;
+            font-family: 'Noto Sans SC', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .tcm-font {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .section {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+            opacity: 0;
+            pointer-events: none;
+            padding: 2rem;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .section.prev { transform: translateY(-100%); }
+        .section.next { transform: translateY(100%); }
+
+        .glow-blue { filter: drop-shadow(0 0 8px var(--cyber-blue)); }
+        .glow-purple { filter: drop-shadow(0 0 12px var(--cyber-purple)); }
+        .glow-gold { filter: drop-shadow(0 0 10px var(--cyber-gold)); }
+
+        .glass {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Section 2: Cyber-Compass Styles */
+        .compass-ring {
+            position: absolute;
+            border-radius: 50%;
+            transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .ring-inner { border: 2px dashed var(--cyber-blue); opacity: 0.8; }
+        .ring-middle { border: 1px solid var(--cyber-purple); opacity: 0.7; }
+        .ring-outer { border: 1px dashed var(--cyber-gold); opacity: 0.6; }
+        .ring-emotions { border: 1px dotted #e0e0e0; opacity: 0.4; }
+
+        .ring-label {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            transition: color 0.5s ease, opacity 0.5s ease;
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        .alignment-indicator {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, var(--cyber-gold), transparent);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .alignment-indicator::after {
+            content: 'ACTIVE';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--cyber-gold);
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        #alchemy-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .sidebar-controls {
+            position: relative;
+            z-index: 50;
+            pointer-events: auto;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 243, 255, 0.05);
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scan 8s linear infinite;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .breathing {
+            animation: breath 4s ease-in-out infinite;
+        }
+
+        @keyframes breath {
+            0%, 100% { opacity: 0.3; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .cyber-card {
+            clip-path: polygon(0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            border: 1px solid var(--cyber-gold);
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(20,20,20,0.9), rgba(5,5,5,0.95));
+        }
+
+        .btn-cyber {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-cyber:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-cyber:active {
+            transform: scale(0.95);
+        }
+
+        .organ-pulse {
+            animation: organ-pulse-anim 2s infinite ease-in-out;
+        }
+
+        @keyframes organ-pulse-anim {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 5px currentColor); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 20px currentColor); }
+        }
+
+        .knowledge-card {
+            border-left: 4px solid var(--cyber-gold);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px 12px 12px 4px;
+            transition: all 0.5s ease;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div class="grain"></div>
+    <div class="scanline"></div>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+</body>
+</html>

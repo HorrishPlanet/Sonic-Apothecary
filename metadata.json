@@ -1,0 +1,7 @@
+{
+  "description": "Sonic Apothecary - A Cyberpunk TCM Digital Healing Lab using generative audio-visual interaction.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "name": "App"
+}
